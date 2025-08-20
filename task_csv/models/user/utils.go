@@ -3,6 +3,7 @@ package user
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"task_csv/services/csv"
 )
 
@@ -15,7 +16,7 @@ func ParseUsersFromCSV(filename string) ([]User) {
 
 		results = append(results, User{
 				ID: id,
-				Name: value[1],
+				Name: strings.ToLower(value[1]),
 				Email: value[2],
 				RoleName: value[3],
 		})
