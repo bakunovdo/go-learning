@@ -29,7 +29,6 @@ func EnrichWithUserRoles(users []User, rolesFileName string) []User {
 	roleMap := make(map[string]string)
 
 	for _, value := range roles[1:] {
-		// id, _ := strconv.Atoi(value[0])
 		roleMap[value[0]] = value[1]
 	}
 
