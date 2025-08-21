@@ -3,22 +3,32 @@ package main
 import (
 	"fmt"
 	"task_csv/models/user"
-	"task_csv/shared/validator"
 )
 
+func handleError(err error, message string) {
+	if err != nil {
+		fmt.Printf("error %s: %v\n", message, err)
+	}
+}
 
 func main() {
-	results := make([]user.User, 0)
+	usersCSV, err := user.ParseUsersFromCSV("./assets/users.csv")
+	handleError(err, "error parsing users")
 
-	users := user.EnrichWithUserRoles(user.ParseUsersFromCSV("./assets/users.csv"), "./assets/user_roles.csv")
-	blacklist := user.ParseBlacklistCSV("./assets/blacklist.csv")
+	rolesMap, err := user.ParseRoleMapFromCSV("./assets/user_roles.csv")
+	handleError(err, "error parsing roles")
 
-	for _, user := range(users) {
-		_, isBlacklisted := blacklist[user.ID]
-		if validator.IsValidEmail(user.Email) && !isBlacklisted {
-			results = append(results, user)
-		}
-	}
+	blacklist, err := user.ParseBlacklistCSV("./assets/blacklist.csv")
+	handleError(err, "error parsing blacklist")
 
-	fmt.Println(results)
+	users := user.UserCSVToUserWithRoles(usersCSV, rolesMap)
+	validatedUsers := user.ValidateUsers(users, blacklist)
+
+	admins := user.GetUsersByRole(validatedUsers, "admin")
+	members := user.GetUsersByRole(validatedUsers, "member")
+	guests := user.GetUsersByRole(validatedUsers, "guest")
+
+	fmt.Printf("admins: %v\n", admins)
+	fmt.Printf("members: %v\n", members)
+	fmt.Printf("guests: %v\n", guests)
 }

@@ -1,19 +1,31 @@
 package user
 
 import (
+	"fmt"
 	"strconv"
 	"task_csv/services/csv"
 )
 
-func ParseBlacklistCSV(filename string) map[int]bool {
-	blacklist := csv.Read(filename)
+type void struct{}
 
-	results := make(map[int]bool, 0)
+func ParseBlacklistCSV(filename string) (map[int]void, error) {
+	blacklist, err := csv.Read(filename)
 
-	for _, v := range blacklist[1:] {
-		id, _ := strconv.Atoi(v[0])
-		results[id] = true
+	if err != nil {
+		return nil, fmt.Errorf("error parsing blacklist: %w", err)
 	}
 
-	return results
+	results := make(map[int]void, len(blacklist))
+
+	for _, v := range blacklist[1:] {
+		id, err := strconv.Atoi(v[0])
+
+		if err == nil {
+			continue
+		}
+
+		results[id] = void{}
+	}
+
+	return results, nil
 }

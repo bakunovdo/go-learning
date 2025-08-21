@@ -2,24 +2,25 @@ package csv
 
 import (
 	"encoding/csv"
-	"log"
+	"fmt"
 	"os"
 )
 
-func Read(filename string) ([][]string) {
+func Read(filename string) ([][]string, error) {
 	f, err := os.Open(filename)
 
 	if err != nil {
-		log.Fatal("Unable to read file " + filename, err)
+		return nil, fmt.Errorf("open file: %w", err)
 	}
+
 	defer f.Close()
 
 	reader := csv.NewReader(f)
 	records, err := reader.ReadAll()
 
 	if err != nil {
-		log.Fatal("Unable to parse file as CSV for " + filename, err)
+		return nil, fmt.Errorf("unable to parse file as CSV for %s: %w", filename, err)
 	}
 
-	return records
+	return records, nil
 }
