@@ -20,7 +20,7 @@ func ParseBlacklistCSV(filename string) (map[int]void, error) {
 	for _, v := range blacklist[1:] {
 		id, err := strconv.Atoi(v[0])
 
-		if err == nil {
+		if err != nil {
 			continue
 		}
 

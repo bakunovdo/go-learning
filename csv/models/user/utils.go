@@ -1,6 +1,7 @@
 package user
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 	"task_csv/services/csv"
@@ -11,7 +12,7 @@ func ParseUsersFromCSV(filename string) ([]UserCSV, error) {
 	records, err := csv.Read(filename)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error parsing users: %w", err)
 	}
 
 	results := make([]UserCSV, 0, len(records))
@@ -34,7 +35,7 @@ func ParseRoleMapFromCSV(rolesFileName string) (map[string]string, error) {
 	roles, err := csv.Read(rolesFileName)
 
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error parsing roles: %w", err)
 	}
 
 	roleMap := make(map[string]string)
@@ -47,7 +48,7 @@ func ParseRoleMapFromCSV(rolesFileName string) (map[string]string, error) {
 }
 
 func UserCSVToUserWithRoles(users []UserCSV, roleMap map[string]string) []User {
-	results := make([]User, len(users))
+	results := make([]User, 0, len(users))
 
 	for i := range users {
 		if roleName, exists := roleMap[users[i].RoleID]; exists {
